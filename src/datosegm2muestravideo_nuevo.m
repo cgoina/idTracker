@@ -71,32 +71,7 @@ color_fondo=[.8 .8 .8];
 h.figure=figure('Color',color_fondo,'NumberTitle','off');%;('Position', [0 0 medidaPantalla(3) medidaPantalla(4)]);
 set(h.figure,'menubar','none','toolbar','figure')
 
-
-
-% if isfield(datosegm,'encriptar')
-%     segm=load_encrypt([datosegm.directorio datosegm.raizarchivo '_' num2str(1)],datosegm.encriptar);
-% else
-%     load([datosegm.directorio datosegm.raizarchivo '_' num2str(1)])
-% end
-% datos.segm=segm;
-% datos.archivoabierto=1;
-% datosarchivos=directorio2datosarchivos(directorio,raizarchivo);
-
-
-
-% datos.colorines=[0 0 0 ; 0 .6 0 ; .5 .2 1; 0 .5 1 ; 1 0 1; .5 1 .5; 1 .5 1; 1 .5 .5 ; 1 .5 0; 0 0 .5; .5 0 0 ];
-
-% colorines=[0 0 0 ; 0 .6 0 ; .5 .2 1; 0 .5 1 ; 1 0 1; .5 1 .5; 1 .5 1; 1 .5 .5 ; 1 .5 0 ];
-% colorines=[0 0 0 ; 0 .6 0 ; .5 1 .5; .5 .2 1; 0 .5 1 ; 1 0 1; 1 .5 1; 1 .5 .5 ; 1 .5 0 ]; % PARA EL VÍDEO DE LOS 3+2 PECES CON ESTRES+EXPERIENCIA
-% colorines=[0 0 0 ; 0 0 1 ; 1 0 0; .2 .2 1 ; .5 .5 1; .7 .7 1; 1 .2 .2; 1 .5 .5 ; 1 .7 .7 ]; % PARA EL VÍDEO DE GRUPOS 1 Y 2 DE CONFLICTO DE JULIÁN
-% colorines=[0 0 0 ; 0 0 1 ; 1 0 0; .2 .2 1 ; 1 .2 .2; 1 .5 .5; .5 .5 1; 1 .7 .7 ; .7 .7 1 ]; % PARA EL VÍDEO DE GRUPOS 3 Y 4 DE CONFLICTO DE JULIÁN
-
 datos.nombrespeces='123456789QWERTYUIOPASDFGHJKL';
-
-% n_archivos=size(datosarchivos.archivo2frame,1);
-% for c_archivos=1:n_archivos
-%     datos.obj(c_archivos)=mmreader([datosarchivos.directorio datosarchivos.raizarchivo num2str(c_archivos) '.avi']);
-% end % c_archivos
 
 %% Guarda datos
 guidata(h.figure,datos)
@@ -119,8 +94,6 @@ h.edit_nframes=uicontrol('Style','edit','Units','Normalized','Position',[.9 .25 
 info_act='Current frame';
 h.text_frameactual=uicontrol('Style','text','Units','normalized','Position',[.9 .15 .09 .05],'String','Frame','BackgroundColor',color_fondo,'TooltipString',info_act);
 h.frameactual=uicontrol('Style','edit','Units','Normalized','Position',[.9 .1 .09 .05],'String','1','tooltipstring',info_act);
-% h.edit_velocity=uicontrol('Style','edit','Units','Normalized','Position',[.85 .9 .1 .05],'String','0.01');
-% h.t=timer('Period',0.01,'TasksToExecute',Inf,'ExecutionMode','FixedSpacing','BusyMode','drop');
 h.text_quality=uicontrol('Style','text','Units','normalized','Position',[.9 .55 .09 .2],'String','','BackgroundColor',color_fondo,'TooltipString',info_act);
 
 h.menushow=uimenu('Label','Show');
@@ -149,16 +122,6 @@ else
     datos.obj=obj;
 end
 
-
-% datos.datosarchivos=datosarchivos;
-% datos.frame=1;%el frame en el que estoy referido al video completo.
-% obj=mmreader([datosarchivos.directorio datosarchivos.raizarchivo '1.avi']);
-% frame=read(datos.obj(1), 1);
-
-% for c_manchas=1:length(segm(1).pixels)
-%     frame(segm(1).pixels{c_manchas})=0;
-% end
-
 axes(h.ejes)
 frame=ones(datos.datosegm.tam);
 h.frame=imagesc(frame(:,:,1));
@@ -177,16 +140,7 @@ axis image
 colormap gray
 hold on
   
-
-
-% color_fondo=get(gcf,'Color');
-% for c_peces=1:datos.datosegm.n_peces
-%     datos.h.labelid(c_peces)=uicontrol('Units','normalized','Style','text','Position',[.95 .9-c_peces/datos.datosegm.n_peces*.8 .05 .1],'String',datos.nombrespeces(c_peces),'ForegroundColor',datos.colorines(c_peces+1,:),'BackgroundColor',color_fondo,'FontSize',12,'TooltipString','Holapis');
-% end
-
 datos.nframes_linea=20;
-
-
 
 %% Vuelve a guardar datos
 guidata(h.figure,datos)
@@ -197,16 +151,8 @@ set(h.barrita,'Max',frametotal);
 set(h.barrita,'Callback',@(uno,dos) ruedecita(uno,dos,h))
 set(h.frameactual,'Callback',@(uno,dos) cambiaframe(uno,dos,h))
 set(h.push_run,'Callback',@(uno,dos) correr(uno,dos,h))
-% set(h.t,'TimerFcn',@(uno,dos) ruedecita(uno,dos,h))
 set(h.figure,'windowscrollwheelfcn',@(uno,dos) ruedecita(uno,dos,h))
 set(h.figure,'KeyPressFcn',@(uno,dos) tecla(uno,dos,h))
-% set(h.push_run,'KeyPressFcn',@(uno,dos) tecla(uno,dos,h))
-% set(h.frameactual,'KeyPressFcn',@(uno,dos) tecla(uno,dos,h))
-% set(h.text_frameactual,'KeyPressFcn',@(uno,dos) tecla(uno,dos,h))
-% set(h.edit_nframes,'KeyPressFcn',@(uno,dos) tecla(uno,dos,h))
-% set(h.text_nframes,'KeyPressFcn',@(uno,dos) tecla(uno,dos,h))
-% set(h.hola,'Callback',@(uno,dos) escribehola(uno,dos,h))
-% set(gcf,'windowbuttondownfcn',@(uno,dos) correr(uno,dos,h))
 set(h.showtray,'Callback',@(uno,dos) cambiacheck(uno,dos,h))
 set(h.showtrozos,'Callback',@(uno,dos) cambiacheck(uno,dos,h))
 set(h.showid,'Callback',@(uno,dos) cambiacheck(uno,dos,h))
@@ -216,11 +162,6 @@ set(h.menuhelp,'Callback',@(uno,dos) ayuda(uno,dos))
 if isfield(h,'popup_plato')
     set(h.popup_plato,'Callback',@(uno,dos) abreplato(uno,dos,h))
 end
-
-
-
-
-
 
 %% ***************
 %% ** FUNCIONES **
@@ -390,8 +331,6 @@ end
 guidata(h.figure,datos)
 
 
-
-
 %% Activar y desactivar checks en en los menús
 function cambiacheck(uno,dos,h)
 if strcmpi(get(uno,'Check'),'on')
@@ -465,15 +404,9 @@ elseif estado==0
     
     ind_frame=get(h.contframe,'XData');%llamamos a ind_frame
     
-%     disp('Pintaframe')
-%     disp(datos.mancha2pez(ind_frame,:))
-%     disp(datos.mancha2centro(ind_frame,:,1))
-%     disp(datos.trajectories(ind_frame,:,1))
-    
     archivo_act=datos.datosegm.frame2archivo(ind_frame,1);
     if ~datos.usavideo
         if archivo_act~=datos.archivoabierto
-            %     fprintf('%g,',archivo_act)
             if isfield(datos.datosegm,'encriptar')
                 if datos.datosegm.encriptar
                     segm=load_encrypt([datos.datosegm.directorio datos.datosegm.raizarchivo '_' num2str(archivo_act)],datos.datosegm.encriptar);
@@ -617,38 +550,15 @@ elseif estado==0
     drawnow expose update
     set(h.control,'XData',0)
 end
-% disp([datestr(inicio,'HH:MM:SS:FFF') '   ' datestr(now,'HH:MM:SS:FFF')])
 
 %% Seleccionar pez
 function seleccionapez(uno,dos,h)
 datos=guidata(h.figure);
 pos=get(uno,'CurrentPoint');
-% x=round(pos(1,1));
-% y=round(pos(1,2));
 if pos(1,1)>=0 && pos(1,1)<=datos.datosegm.tam(2) && pos(1,2)>=0 && pos(1,2)<=datos.datosegm.tam(1)
-%     pixel=sub2ind(datos.datosegm.tam,y,x);
-    % plot(x,y,'.')
     ind_frame=get(h.contframe,'XData');
     distancias=sqrt((datos.mancha2centro(ind_frame,:,1)-pos(1,1)).^2+(datos.mancha2centro(ind_frame,:,2)-pos(1,2)).^2);
     [m,manchabuena]=min(distancias);
-%     if datos.datosegm.frame2archivo(ind_frame,1)~=datos.archivoabierto
-%         archivo_act=datos.datosegm.frame2archivo(ind_frame,1);
-%         %     fprintf('%g,',archivo_act)
-%         if isfield(datosegm,'encriptar')
-%             segm=load_encrypt([datos.datosegm.directorio datos.datosegm.raizarchivo '_' num2str(archivo_act)],datosegm.encriptar);
-%         else
-%             load([datos.datosegm.directorio datos.datosegm.raizarchivo '_' num2str(archivo_act)])
-%         end
-%         datos.segm=segm;
-%         datos.archivoabierto=archivo_act;
-%     end
-%     frame_act=datos.datosegm.frame2archivo(ind_frame,2);
-%     manchabuena=[];
-%     for c_manchas=1:length(datos.segm(frame_act).pixels)
-%         if any(datos.segm(frame_act).pixels{c_manchas}==pixel)
-%             manchabuena=c_manchas;
-%         end
-%     end
     if ~isempty(manchabuena)
         if isfield(datos,'trozos')
             datos.trozoseleccionado=datos.trozos(ind_frame,manchabuena);
@@ -683,18 +593,7 @@ if ~datos.esperandocorreccion
                     buenos(datos.trozos==datos.trozos(ind_frame,c_manchas))=true;
                 end
             end
-%             sumas=sum(buenos,2);
-%             buenos=sumas==sumas(ind_frame);
             buenos=~any(datos.trozos>0 & ~buenos,2);
-            %             elseif isfield(datos,'pezseleccionado') && datos.pezseleccionado>0 % Siguiente cruce del que está seleccionado
-            %                 mancha_act=datos.mancha2pez(ind_frame,:)==datos.pezseleccionado;
-%                 trozo_act=datos.trozos(ind_frame,mancha_act);
-%                 if length(trozo_act)==1
-%                     buenos=datos.trozos==trozo_act;
-%                 end
-%             elseif isfield(datos,'trozoseleccionado') && datos.trozoseleccionado>0 && any(datos.trozos(ind_frame,:)==datos.trozoseleccionado) % Si no hay pez seleccionado, sólo actúa si seguimos en el trozo seleccionado
-%                 buenos=datos.trozos==datos.trozoseleccionado;
-%             end
             if dos.Character=='x' || dos.Character=='X' % Cruce anterior
                 buenos(ind_frame:end)=true;
                 framecruce=find(~buenos,1,'last');
@@ -742,20 +641,6 @@ else % Correcciones
     else
         pezbueno=regexpi(datos.nombrespeces,dos.Character);
     end
-    %     switch dos.Character
-    %         case {'1','2','3','4','5','6','7','8','9'}
-    %             pezbueno=str2num(dos.Character);
-    %         case '0'
-    %             pezbueno=10;
-    %         case ''''
-    %             pezbueno=11;
-    %         case '¡'
-    %             pezbueno=12;
-    %         case 'º' % Sin identificar/múltiple
-    %             pezbueno=NaN;
-    %         otherwise
-    %             pezbueno=[];
-    %     end
     if ~isempty(pezbueno)
         corrige(h,pezbueno)
     end
@@ -766,22 +651,7 @@ end
 %% Corrección de identidad
 function corrige(h,pezbueno)
 datos=guidata(h.figure);
-% pos_fig=get(h.figure,'Position');
-% % pos_ejes=get(h.ejes,'Position');
-% pos_ejes=plotboxpos(h.ejes); % Esta función es de matlabcentral
-% % get(h.ejes,'Position')
-% % get(h.ejes,'TightInset')
 
-% pos2=get(0,'PointerLocation');
-% pos2=(pos2-pos_fig(1:2))./pos_fig(3:4); % Pasa a referido a la figura, y en unidades relativas
-% pos2=(pos2-pos_ejes(1:2))./pos_ejes(3:4); % Pasa a referido a los ejes, y en unidades relativas
-% pos2(2)=1-pos2(2); % Porque el eje y está invertido en imágenes.
-% tam_foto=size(get(h.frame,'CData'));
-% pos2=pos2.*tam_foto([2 1]); % Pasa a pixels
-% x=pos2(1);
-% y=pos2(2);
-
-% [x,y]=ginput(1);
 % Localiza la mancha
 if length(pezbueno)==1 % Cambio de identidad de una mancha o corte de fragmento
     elementos=find(datos.trozos==datos.trozoseleccionado);
@@ -792,7 +662,6 @@ if length(pezbueno)==1 % Cambio de identidad de una mancha o corte de fragmento
     elseif isnan(pezbueno) || pezbueno<=datos.datosegm.n_peces        
         datos.mancha2pez(elementos)=pezbueno;
         datos.pezseleccionado=pezbueno;
-        % datos.mancha2pez(ind_frame,:)        
     end
 elseif length(pezbueno)==3 % Nuevo centroide
     ind_frame=get(h.contframe,'XData');%llamamos a ind_frame
@@ -803,7 +672,6 @@ elseif length(pezbueno)==3 % Nuevo centroide
     datos.mancha2pez(ind_frame,mancha)=pezbueno(1);
     datos.mancha2centro(ind_frame,mancha,:)=pezbueno(2:3);    
 end
-% set(h.figure,'windowscrollwheelfcn',@(uno,dos) ruedecita(uno,dos,h))
 datos.trajectories=mancha2pez2trayectorias(datos.datosegm,datos.mancha2pez,[],[],datos.mancha2centro);
 
 variable.mancha2pez=datos.mancha2pez;
@@ -818,22 +686,13 @@ trajectories=datos.trajectories;
 save([datos.datosegm.directorio 'trajectories' datos.coletilla],'trajectories')
 clear mancha2pez
 
-% disp('Correccion')
-% datos.mancha2pez(ind_frame,:)
-% datos.mancha2centro(ind_frame,:,1)
-% datos.trajectories(ind_frame,:,1)
-
 guidata(h.figure,datos)
 pintaframe([],[],h)
 
 function correr(uno,dos,h)
 corriendo=~get(h.corriendo,'XData'); % Este controla si está corriendo
-% corriendo
 set(h.corriendo,'XData',double(corriendo))
 set(h.figure, 'CurrentObject',h.figure)
-% datos=guidata(h.figure);
-% datos.corriendo=~datos.corriendo;
-% guidata(h.figure,datos);
 if corriendo && ~get(h.corriendo,'YData') % Para evitar que pueda entrar más de una vez al anidarse
     set(h.corriendo,'YData',1)
     set(h.push_run,'String','Stop')
@@ -845,33 +704,7 @@ if corriendo && ~get(h.corriendo,'YData') % Para evitar que pueda entrar más de 
     set(h.corriendo,'YData',0)
     set(h.push_run,'String','Run')
 end
-% disp('correr')
 pause(.1)
-% if strcmpi(get(h.t,'Running'),'off')
-%     start(h.t)
-% else
-%     stop(h.t)
-% end
-
-
-% function corrige(uno,dos,h,archivo,titulo)
-% datos=guidata(h.figure);
-% [x,y]=ginput(1);
-% set(h.figure,'windowscrollwheelfcn',@(uno,dos) ruedecita(uno,dos,h,archivo,titulo)) % Por algún motivo raro esta función se pierde al hacer ginput.
-% datos.trayectoria(datos.frame,1)=x;
-% datos.trayectoria(datos.frame,2)=y;
-% guidata(h.figure,datos)
-% ruedecita([],[],h,archivo,titulo)
-
-% function retraquea(uno,dos,h,archivo,titulo,umbrales,roi,videomedio)
-% datos=guidata(h.figure);
-% title('Traqueando...')
-% if isempty(roi)
-%     figure
-% end
-% datos.trayectoria=tracking_choices(archivo,umbrales,roi,videomedio,datos.frame+1,datos.trayectoria);
-% guidata(h.figure,datos)
-% ruedecita([],[],h,archivo,titulo)
 
 function ayuda(uno,dos)
 msgbox(sprintf('To start/stop reproduction of the video, click "Run" or hit spacebar.\n\nYou may also advance step-by-step in the video using the mouse scroll wheel.\n\nUse the slide bar on the bottom to go to any point of the video, or edit the ''Current frame'' box to go to an specific frame.\n\nThe box''Speed'' controls how many frames the video will advance per step of the mouse scroll wheel (or per iteration when running). A negative number will make the video to play backwards.'),'Help')

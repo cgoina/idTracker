@@ -9,7 +9,10 @@
 
 function idTracker_batch(path_to_datosegm)
 
-load(path_to_datosegm)
+load(path_to_datosegm, 'variable');
 datosegm=variable;
 datosegm.empezarsinmas=true;
-idTracker(datosegm)
+datosegm.reutiliza.datosegm=true;
+datosegm.saltatodo=false;
+datosegm.muestrapanel=false;
+idTrackerEntry(datosegm);

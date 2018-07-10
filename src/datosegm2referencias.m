@@ -50,11 +50,6 @@ end
 unidad=pwd;
 unidad=unidad(1);
 ahora=datestr(now,30);
-% directorio_errores=[unidad ':\datosegm2referencias_errores\' ahora];
-% listamapas.nombrearchivo_errores=[directorio_errores 'archivoerrores_'];
-% if isempty(dir(directorio_errores))
-%     mkdir(directorio_errores)
-% end
 
 umbral_error=10^-5;
 umbral_nframes=15;
@@ -78,8 +73,6 @@ for largo=largos(:)'
     intervalosbuenos.manchasbuenas(ind_sequedan)=true;
     intervalosbuenos.trozo2nfbuenos(largo)=sum(trozos(:)==largo & intervalosbuenos.manchasbuenas(:));
 end
-% plot(intervalosbuenos.trozo2nfbuenos,'r')
-% caca
 
 nvalidos=intervalosbuenos.trozo2nfbuenos(intervalosbuenos.grupostrozos);
 if datosegm.n_peces==1
@@ -124,8 +117,6 @@ while max(nframes_min)<nframes_final && (max(nvalidos_min)>=umbral_nframes || su
     end
     if nframesmin_estimado<nframes_final && max(nvalidos_min)>=umbral_nframes && length(nframes_min)<limgrupos
         nuevosgrupos=true;
-        %         n_grupos=n_grupos+1;
-        
         % Primero intenta coger uno que no solape con ninguno ya cogido        
         umbral_trozosolapan=-1;
         ind_grupo=[];
@@ -141,51 +132,31 @@ while max(nframes_min)<nframes_final && (max(nvalidos_min)>=umbral_nframes || su
         if umbral_trozosolapan<datosegm.n_peces
             cambios=true;
             n_refs=n_refs+1;
-%         % Si no queda ninguno que no solape, coge uno que solape
-%         if m<umbral_nframes    
-%             disp('Permitiendo solapamiento entre grupos de trozos')
-%             [m,ind_grupo]=max(nvalidos_min);
-%         end
-%         plot(nvalidos_min)
-%         pause
-% try
-        grupo_act=intervalosbuenos.grupostrozos(ind_grupo,:);
-% catch
-%     keyboard
-% end
-        
-        
-%         plot(nvalidos_min)
-%         pause
-        disp(grupo_act)
-        [refs_act,framesescogidos{n_refs}]=grupotrozos2refs(datosegm,trozos,intervalosbuenos,grupo_act);
-        tams=cellfun(@(x) size(x,4),refs_act)        
-        maximo=max(cellfun(@(x) max(x(:)),refs_act));
-        maximo_todos=max([maximo maximo_todos]);
-        if maximo_todos<intmax('uint16')
-            refs_act=cellfun(@(x) uint16(x),refs_act,'UniformOutput',false);
-            listamapas.lista=uint16(listamapas.lista);
-        elseif maximo_todos<intmax('uint32')
-            refs_act=cellfun(@(x) uint32(x),refs_act,'UniformOutput',false);
-            listamapas.lista=uint32(listamapas.lista);
-        end
-        nframes_min(n_refs)=min(tams)
-%         if n_mapaslista~=size(listamapas.lista,4);
-%             disp('Esto no debería haber pasado')
-%             keyboard
-%         end
-        n_mapaslista=size(listamapas.lista,4);        
-        listamapas.lista(:,:,:,n_mapaslista+1:n_mapaslista+sum(tams))=NaN;
-        listamapas.lista2trozo(1:2,n_mapaslista+1:n_mapaslista+sum(tams))=NaN;
-        listamapas.ref2trozos{n_refs}=NaN(datosegm.n_peces,1);
-        listamapas.solapanconcogidos{n_refs}=solapanconcogidos(ind_grupo,:)';        
-        for c_peces=1:datosegm.n_peces
-            % ESTO HABRÍA QUE MEJORARLO, PARA QUE NO GUARDE EL MISMO TROZO
-            % CON DOS IDENTIDADES DIFERENTES CUANDO PERMITIMOS SOLAPAMIENTO
-            % (ES LO QUE HACÍAN LAS LÍNEAS COMENTADAS). PERO ESO NOS
-            % EXIGIRÍA CAMBIAR COMPLETAMENTE EL MODO EN EL QUE LOS DATOS SE
-            % GUARDAN EN MENORES, Y AHORA MISMO ES UN LÍO TREMENDO.
-%             if ~listamapas.solapanconcogidos{n_refs}(c_peces)
+            grupo_act=intervalosbuenos.grupostrozos(ind_grupo,:);
+            disp(grupo_act)
+            [refs_act,framesescogidos{n_refs}]=grupotrozos2refs(datosegm,trozos,intervalosbuenos,grupo_act);
+            tams=cellfun(@(x) size(x,4),refs_act);
+            maximo=max(cellfun(@(x) max(x(:)),refs_act));
+            maximo_todos=max([maximo maximo_todos]);
+            if maximo_todos<intmax('uint16')
+                refs_act=cellfun(@(x) uint16(x),refs_act,'UniformOutput',false);
+                listamapas.lista=uint16(listamapas.lista);
+            elseif maximo_todos<intmax('uint32')
+                refs_act=cellfun(@(x) uint32(x),refs_act,'UniformOutput',false);
+                listamapas.lista=uint32(listamapas.lista);
+            end
+            nframes_min(n_refs)=min(tams);
+            n_mapaslista=size(listamapas.lista,4);        
+            listamapas.lista(:,:,:,n_mapaslista+1:n_mapaslista+sum(tams))=NaN;
+            listamapas.lista2trozo(1:2,n_mapaslista+1:n_mapaslista+sum(tams))=NaN;
+            listamapas.ref2trozos{n_refs}=NaN(datosegm.n_peces,1);
+            listamapas.solapanconcogidos{n_refs}=solapanconcogidos(ind_grupo,:)';        
+            for c_peces=1:datosegm.n_peces
+                % ESTO HABRÍA QUE MEJORARLO, PARA QUE NO GUARDE EL MISMO TROZO
+                % CON DOS IDENTIDADES DIFERENTES CUANDO PERMITIMOS SOLAPAMIENTO
+                % (ES LO QUE HACÍAN LAS LÍNEAS COMENTADAS). PERO ESO NOS
+                % EXIGIRÍA CAMBIAR COMPLETAMENTE EL MODO EN EL QUE LOS DATOS SE
+                % GUARDAN EN MENORES, Y AHORA MISMO ES UN LÍO TREMENDO.
                 ind_act=n_mapaslista+1:n_mapaslista+tams(c_peces);
                 listamapas.lista(:,:,:,ind_act)=refs_act{c_peces};
                 n_trozos=n_trozos+1;
@@ -196,46 +167,38 @@ while max(nframes_min)<nframes_final && (max(nvalidos_min)>=umbral_nframes || su
                 listamapas.trozo2trozo_general(n_trozos)=grupo_act(c_peces);
                 listamapas.comparables{n_trozos}=false(1,tams(c_peces));
                 n_mapaslista=n_mapaslista+tams(c_peces);
-%             else
-%                 listamapas.ref2trozos{n_refs}(c_peces,1)=find(listamapas.trozo2trozo_general==grupo_act(c_peces));
-%             end % if el trozo no solapa con ninguno ya metido
-        end % c_peces
-        clear refs_act
-        listamapas.comparados{n_trozos,n_trozos}=[];
+            end % c_peces
+
+            clear refs_act
+            listamapas.comparados{n_trozos,n_trozos}=[];
+
+            % Anulo el grupo cogido
+            nvalidos_min(ind_grupo)=0;
+
+            % Recuerdo o anulo todos los grupos que tengan algún trozo en común
+            for c_trozos=1:datosegm.n_peces
+                solapanconcogidos(intervalosbuenos.grupostrozos==grupo_act(c_trozos))=true;
+            end % c_trozos
         
-        % Anulo el grupo cogido
-        nvalidos_min(ind_grupo)=0;
-        
-        % Recuerdo o anulo todos los grupos que tengan algún trozo en común
-        for c_trozos=1:datosegm.n_peces
-            solapanconcogidos(intervalosbuenos.grupostrozos==grupo_act(c_trozos))=true;
-%             comunes=intervalosbuenos.grupostrozos==grupo_act(c_trozos);
-%             solapanconcogidos(any(comunes,2))=true;            
-        end % c_trozos
-        
-        
-        juntables(n_refs)=false;
-        menores{n_trozos,n_trozos}=[];
-        for c1_trozos=1:n_trozos
-            for c2_trozos=1:n_trozos
-                if isempty(listamapas.comparados{c1_trozos,c2_trozos})
-                    listamapas.comparados{c1_trozos,c2_trozos}=false(1,length(listamapas.trozo2lista{c2_trozos}));
+            juntables(n_refs)=false;
+            menores{n_trozos,n_trozos}=[];
+            for c1_trozos=1:n_trozos
+                for c2_trozos=1:n_trozos
+                    if isempty(listamapas.comparados{c1_trozos,c2_trozos})
+                        listamapas.comparados{c1_trozos,c2_trozos}=false(1,length(listamapas.trozo2lista{c2_trozos}));
+                    end
                 end
-                %                 if isempty(menores{c1_trozos,c2_trozos})
-                %                     menores{c1_trozos,c2_trozos}=Inf(
-                %                 end
             end
-        end
-        listamapas.archivoerrores(n_trozos,n_trozos)=0;
-        % Extiendo matrel, P0 y P3
-        matrel(1:datosegm.n_peces,1:datosegm.n_peces,n_refs,1:n_refs)=NaN;
-        matrel(1:datosegm.n_peces,1:datosegm.n_peces,1:n_refs,n_refs)=NaN;
-        P0(1:datosegm.n_peces,1:datosegm.n_peces,n_refs,1:n_refs)=NaN;
-        P0(1:datosegm.n_peces,1:datosegm.n_peces,1:n_refs,n_refs)=NaN;
-        P3(1:datosegm.n_peces,1:datosegm.n_peces,n_refs,1:n_refs)=NaN;
-        P3(1:datosegm.n_peces,1:datosegm.n_peces,1:n_refs,n_refs)=NaN;        
-        nframes_max(n_refs)=max(tams);
-        nframesmin_estimado=nframesmin_estimado+min(tams);
+            listamapas.archivoerrores(n_trozos,n_trozos)=0;
+            % Extiendo matrel, P0 y P3
+            matrel(1:datosegm.n_peces,1:datosegm.n_peces,n_refs,1:n_refs)=NaN;
+            matrel(1:datosegm.n_peces,1:datosegm.n_peces,1:n_refs,n_refs)=NaN;
+            P0(1:datosegm.n_peces,1:datosegm.n_peces,n_refs,1:n_refs)=NaN;
+            P0(1:datosegm.n_peces,1:datosegm.n_peces,1:n_refs,n_refs)=NaN;
+            P3(1:datosegm.n_peces,1:datosegm.n_peces,n_refs,1:n_refs)=NaN;
+            P3(1:datosegm.n_peces,1:datosegm.n_peces,1:n_refs,n_refs)=NaN;        
+            nframes_max(n_refs)=max(tams);
+            nframesmin_estimado=nframesmin_estimado+min(tams);
         else
             datosegm.refs_solapantes=false;
         end
@@ -258,10 +221,7 @@ while max(nframes_min)<nframes_final && (max(nvalidos_min)>=umbral_nframes || su
     % Sólo recalcula nombres si hace falta
     if nuevosgrupos || (any(~juntables) && nframesmin_estimado<nframes_final && juntapocoapoco)
         % Actualiza matrel
-%         if size(matrel,3)==16
-%             keyboard
-%         end
-cambios=true;
+        cambios=true;
         if n_refs>1
             faltan=isnan(squeeze(matrel(1,1,:,:)));
             faltan=faltan & faltan';
@@ -273,11 +233,7 @@ cambios=true;
                 menosframes=nframes_min<=nframes_min(ind_actualiza);
                 menosframes(ind_actualiza)=false;
                 if any(menosframes)
-%                     try
-                        [matrel,menores,listamapas]=actualizamatrel(find(menosframes),ind_actualiza,matrel,menores,listamapas);
-%                     catch
-%                         keyboard
-%                     end
+                    [matrel,menores,listamapas]=actualizamatrel(find(menosframes),ind_actualiza,matrel,menores,listamapas);
                 end
                 masframes=nframes_min>nframes_min(ind_actualiza);
                 if any(masframes)
@@ -291,18 +247,11 @@ cambios=true;
                 end
             end % while faltan por actualizar
         end % if más de una referencia
-%         try
         [nombres,proberror,buenos,P3_mat,P3,principal,P3_orden]=matrel_mat2nombres(matrel,P3);
-%         catch
-%             keyboard
-%         end
         
         % Anulo como juntables los que no sean buenos
         juntables(~buenos)=false;
         
-%         if any(isnan(proberror))
-%             keyboard
-%         end
         
         % Compruebo si algún nombre ha cambiado desde la última iteración
         % Renombro los nombres antiguos, por si ha cambiado el principal
@@ -336,29 +285,12 @@ cambios=true;
         if compruebahandles(handles,camposhandles)            
             set(handles.frame,'CData',P3_dibujar)
             axis(handles.ejes,[0.5 datosegm.n_peces*n_refs+.5 0.5 datosegm.n_peces*n_refs+.5])
-            %             set(handles.textowaitReferences,'String',[num2str(round(nframesmin_estimado/nframes_final*100)) ' %'])
-            drawnow
-        else
-            if ~ishandle(h_figura)
-                h_figura=figure;
-            end
-            figure(h_figura)
-            imagesc(P3_dibujar)
             drawnow
         end
         
-        
     end
     
-%     try
     [proberror juntables']
-%     catch
-%         keyboard
-%     end
-    
-%     if ~isempty(dir('f:\parar.txt'))
-%         keyboard
-%     end
     
     if sum(juntables)>1 && (max(nvalidos_min)<umbral_nframes || length(nframes_min)>=limgrupos || nframesmin_estimado>=nframes_final)
         cambios=true;

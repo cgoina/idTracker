@@ -78,21 +78,6 @@ if isfield(datosegm,'mascara_intensmed') && ~isempty(datosegm.mascara_intensmed)
 else
     mascara_intensmed=datosegm.mascara;
 end
-% mascara_intensmed=true(datosegm.tam);
-% roi=datosegm.roi;
-% if numel(roi)==4
-%     roi=round(roi);
-%     x=1:datosegm.tam(2);
-%     y=1:datosegm.tam(1);
-%     mascara_intensmed(:,x<min(roi(:,1)))=false;
-%     mascara_intensmed(:,x>max(roi(:,1)))=false;
-%     mascara_intensmed(y<min(roi(:,2)),:)=false;
-%     mascara_intensmed(y>max(roi(:,2)),:)=false;
-% elseif numel(roi)==3
-%     X=repmat(1:datosegm.tam(2),[datosegm.tam(1) 1]);
-%     Y=repmat((1:datosegm.tam(1))',[1 datosegm.tam(2)]);
-%     mascara_intensmed=(X-roi(1)).^2 + (Y-roi(2)).^2<=roi(3)^2;
-% end
 archivoabierto=0;
 for frame_act=indices
     archivo=datosegm.frame2archivovideo(frame_act,1);
@@ -122,25 +107,11 @@ for frame_act=indices
         archivoabierto=archivo;
     end
     frame_arch=datosegm.frame2archivovideo(frame_act,2);
-%     if strcmpi(datosegm.extension,'avi')
-% try
-        frame=read(datosegm.obj{archivo},frame_arch);
-% catch
-%     keyboard
-% end
-        if size(frame,3)==3
-            frame(:,:,1)=rgb2gray(frame);
-            frame=frame(:,:,1);
-        end
-%     else
-%         caca
-%         obj=mmread([datosegm.directorio_videos datosegm.raizarchivo_videos num2str(archivo) '.' datosegm.extension],frame_arch);
-%         frame=obj.frames.cdata;
-%     end
-    %             figure
-    %             imagesc(frame)
-    %             title(num2str([frame_act archivo frame_arch]))
-    %             ginput(1);
+    frame=read(datosegm.obj{archivo},frame_arch);
+    if size(frame,3)==3
+        frame(:,:,1)=rgb2gray(frame);
+        frame=frame(:,:,1);
+    end
     frame_doub=double(frame(:,:,1,1)); % Los dos unos deberían ser innecesarios
     if datosegm.cambiacontraste
         frame_doub=255-frame_doub;
@@ -153,19 +124,14 @@ for frame_act=indices
     end
     if mod(c_frames,10)==0
         if ~isempty(handles)
-                set(handles.frame,'CData',suma)
-                set(handles.waitBackground,'XData',[0 0 c_frames/nframes_media c_frames/nframes_media])
-                set(handles.textowaitBackground,'String',[num2str(round(c_frames/nframes_media*100)) ' %'])
+            set(handles.frame,'CData',suma)
+            set(handles.waitBackground,'XData',[0 0 c_frames/nframes_media c_frames/nframes_media])
+            set(handles.textowaitBackground,'String',[num2str(round(c_frames/nframes_media*100)) ' %'])
+            % only draw if the handles are set
+            drawnow
         else
             fprintf('%g,',c_frames)
-            imagesc(suma)            
-            %             colormap gray
-            axis image
-            colorbar
         end
-        drawnow
-        %             ginput(1);
-        %             caca
     end
 end % frame_act
 datosegm.videomedio=suma/c_frames;
@@ -180,41 +146,3 @@ if ~isempty(handles)
     set(handles.lienzo_mascara,'Visible','on')
     set(handles.Background,'Value',1)
 end
-
-
-
-% % Cálculo del umbral
-% indices=round(mean([indices(1:end-1) ; indices(2:end)],1)); % Cojo los frames más alejados de los usados para el vídeo medio
-% % Ahora cojo máximo 100 de estos frames
-% if length(indices)>100
-%     indices=indices(equiespaciados(100,length(indices)));
-% end
-% diferencias=NaN([size(frame_doub) length(indices)]);
-% c_frames=0;
-% X_filtro=-3:3;
-% X_filtro=repmat(X_filtro,[length(X_filtro) 1]);
-% filtro=exp(-(X_filtro.^2+X_filtro'.^2)/3);
-% for frame_act=indices
-%     c_frames=c_frames+1;
-%     archivo=datosegm.frame2archivo(frame_act,1);
-%     frame_arch=datosegm.frame2archivo(frame_act,2);
-%     frame=read(obj(archivo),frame_arch);
-%     %             figure
-%     %             imagesc(frame)
-%     %             title(num2str([frame_act archivo frame_arch]))
-%     %             ginput(1);
-%     frame_doub=double(frame(:,:,1,1));
-%     frame_doub=frame_doub/mean(frame_doub(:));
-%     diferencia=frame_doub-datosegm.videomedio; 
-%     diferencias(:,:,c_frames)=filter2(filtro,diferencia);        
-% end % frame_act
-% hist(diferencia(:),200)
-% hold on
-% datosegm.umbral=-std(diferencias(:))*6; % Cojo 6 desvest.
-% hold on
-% ejes=axis;
-% axis(ejes);
-% plot(datosegm.umbral*[1 1],ejes(3:4),'k')
-% if abs(nanmean(diferencias(:)))>abs(nanstd(diferencias(:)))
-%     error('Algo muy chungo pasa')
-% end

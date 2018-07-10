@@ -1,252 +1,15 @@
-% 1-Jun-2016 14:06:15  Upgrade to Matlab 2016a (Antonio).
-% 21-May-2016 11:04:20 I add datosegm.stopafterresegmentation, so that one
-% can stop the process right after resegmentation
-% 21-May-2016 09:58:55 I improve the handling of file separators, using
-% filesep
-% 09-Oct-2015 10:26:14 Nada.
-% 21-Jul-2014 22:38:46 Hago que funcione en mac y linux (/ en vez de \)
-% 15-Jul-2014 18:09:12 Separo las trayectorias en trajectories y
-% trajectories_nogaps
-% 29-Apr-2014 08:59:03 Elimino la encriptaci�n
-% 17-Mar-2014 11:19:29 Limpieza y reorganizaci�n general. Cambio
-% getComputerName por leer directamente el hostname
-% 13-Mar-2014 10:26:49 Hago que guarde m�s a menudo datosegm (para que se
-% guarden los tiempos)
-% 15-Feb-2014 13:54:51 A�ado la resegmentaci�n
-% 07-Feb-2014 09:34:22 Hago que guarde los tiempos
-% 04-Feb-2014 15:13:59 Hago que pueda quedarse justo despu�s de calcular
-% referencias
-% 02-Feb-2014 20:02:11 A�ado el c�lculo de ramificaciones para tener en
-% cuenta los trozos a los que ha podido ir un pez en cada momento. REVIERTO
-% PARCIALMENTE: Lo dejo preparado, pero desactivado. Porque tampoco
-% funciona demasiado bien, y me da miedo que sea m�s impredecible.
-% 08-Jan-2014 11:15:14 Hago que abra matlabpool aunque s�lo se quiera 1
-% procesador. Adem�s no abre matlabpool si ya est� abierto con el n�mero de
-% procesadores adecuado.
-% 04-Jan-2014 21:32:13 A�ado el rec�lculo de tam_mapas si es necesario
-% 22-Dec-2013 02:23:38 Hago que vaya m�s r�pido si hay un solo bicho
-% 21-Dec-2013 12:48:19 Cambio raizarchivos por nombrearchivo, para poder
-% incluir la extensi�n
-% 21-Dec-2013 11:51:49 Cambios est�ticos sobre todo
-% 20-Dec-2013 20:07:17 Hago que por defecto identifique un m�ximo de 1000
-% frames por trozo. Adem�s, hago que por defecto rechaze frames en los que
-% haya m�s de 2*n_peces manchas.
-% 12-Dec-2013 20:01:21 Hago que muestre el n�mero de procesadores que est�
-% usando realmente
-% 12-Dec-2013 15:37:42 Hago que guarde la versi�n de Matlab para elegir
-% entre mmreader y VideoReader
-% 02-Dec-2013 19:10:14 Hago que encripte autom�ticamente si no hay
-% argumentos de entrada
-% 01-Dec-2013 10:25:32 Hago que las trayectorias se guarden tambi�n en el
-% directorio del v�deo, y mejoro el mensaje de despedida.
-% 29-Nov-2013 10:04:14 Hago que por defecto sean 5 individuos.
-% 29-Nov-2013 08:20:35 Hago que los errores salgan m�s elegantemente.
-% Adem�s cambio la fecha en datosegm.version (esto deber�a hacerlo m�s a
-% menudo)
-% 28-Nov-2013 20:33:03 Hago que muestre un aviso al terminar
-% 25-Nov-2013 17:46:17 Paso de trayectorias a trajectories, en incoroporo
-% la transformaci�n a txt.
-% 22-Nov-2013 18:18:55
-% 05-Nov-2013 14:54:18 Revierto al sistema de referencias antiguo
-% 25-Sep-2013 21:26:12 Meto el nuevo sistema de referencias
-% 19-Jul-2013 16:08:12 Hago que se pueda forzar que coja referencias
-% incluso cuando hay un solo pez
-% 04-Jul-2013 20:50:02 Hago que se pueda controlar el n�mero de procesadores
-% 18-Jun-2013 19:22:53 A�ado mancha2centro
-% 10-Jun-2013 14:41:27
-% 08-Jun-2013 22:07:07 A�ado el fichero de log
-% 31-May-2013 20:49:35 A�ado la posibilidad de encriptar los archivos
-% 31-May-2013 16:22:41 Hago que pueda funcionar sin entradas (para la versi�n compilada)
-% 28-May-2013 19:35:30 A�ado la opci�n de s�lo calcular el datosegm b�sico. Adem�s cambio la salida, de trayectorias a datosegm
-% 09-May-2013 09:56:22 Hago que cuando est� activo empezarsinmas reutilice todo por defecto (a menos que empezarsinmas sea 2)
-% 30-Apr-2013 11:37:33 Hago que s�lo reutilice las detecci�n de manchas individuales si encuentra indiv
-% Adem�s, hago que no abra matlabpool si est� en Trueno
-% 26-Apr-2013 17:40:24 Hago que calcule trozos antes de buscar manchas
-% individuales (lo hago para poder borrar segm.pixels cuando subo datos a
-% Trueno)
-% 25-Apr-2013 17:33:02 A�ado Trueno
-% 17-Apr-2013 11:58:53 A�ado la opci�n "save & exit"
-% 10-Apr-2013 16:40:53 A�ado la posibilidad de traquear s�lo un intervalo
-% 28-Feb-2013 12:01:04 A�ado el detector de blanco y negro o color
-% 18-Feb-2013 10:51:00 Hago que pueda reutilizar trozos
-% 11-Feb-2013 18:09:13 Hago que pixelsmierda pueda calcularse con el m�todo de contar frames
-% 24-Jan-2013 12:55:36 Actualizo a la nueva versi�n de solapamiento2trozos
-% 27-Nov-2012 18:43:13 Cambio el formato de reutiliza
-% 23-Nov-2012 14:36:50 Integro el panel. Adem�s, hago que pueda meterse datosegm como �nico argumento de entrada.
-% Adem�s, reorganizo para que cosas como npixels se calculen al hacer la segmentaci�n, y reordeno para que est�n
-% m�s claros los pasos que pueden reutilizarse.
-% 23-Nov-2012 08:47:37 Quito cambiacontraste de la llamada a datosegm2segms
-% 21-Nov-2012 15:15:36 Meto el panel. Adem�s reorganizo varias cosas. Quito el c�digo que correspond�a al caso de meter
-% el v�deo ya segmentado (de todos modos ese c�digo era antiguo y probablemente ya no funcionar�a)
-% 16-Nov-2012 14:28:25 Hago que se pueda elegir entre adquisici�n de referencias antigua o nueva.
-% 18-Oct-2012 14:44:33 A�ado el panel de control
-% 03-Oct-2012 18:49:01 Cambio de excluyezona_intensmed a mascara_intensmed
-% 19-Sep-2012 11:31:58 Hago que funcione mejor para v�deos de un solo pez.
-% Salta la clasificaci�n de manchas individuales, y no hace la
-% identificaci�n usando los mapas.
-% 31-Jul-2012 09:28:59 A�ado la posibilidad de excluir una zona para el
-% c�lculo de intensmed
-% 26-Jul-2012 20:50:24 Hago que vuelva a usar las versiones antiguas de
-% datosegm2referencias y datosegm2intervalosbuenos
-% 26-Jul-2012 20:39:39 A�ado el tama�o m�ximo de manchas
-% 23-Jul-2012 20:42:13 A�ado el limpiador de mierda
-% 27-Jun-2012 19:35:36 Hago que pueda funcionar con referencias externas
-% 01-Jun-2012 18:51:26 Intento mejorar la eficiencia en el uso de memoria
-% 19-May-2012 11:20:21 Hago que pueda reutilizar las refs. individuales.
-% 08-May-2012 19:26:00 Modificaciones menores.
-% 13-Mar-2012 20:10:03 Incluyo la comprobaci�n de n�mero de peces en cada
-% mancha.
-% 08-Mar-2012 21:07:11 Actualizo, metiendo todos los cambios que he metido
-% en identitracking_refsexternas.
-% 22-Feb-2012 19:22:25 A�ado la posibilidad de invertir el contraste
-% 26-Jan-2012 17:50:16 De momento, nada.
-% 06-Dec-2011 11:23:43 A�ado matriznoson
-% 18-Nov-2011 14:36:36 A�ado roi
-% 10-Nov-2011 17:59:50 Cambio a la nueva segmentaci�n en la que s�lo tiene
-% en cuenta la diferencia con el videomedio
-% 14-Oct-2011 17:55:14 Cambio el c�lculo de las probabilidades de error.
-% APE 11 oct 11 Viene de identitracking_masdedos
-
-% (C) 2014 Alfonso P�rez Escudero, Gonzalo G. de Polavieja, Consejo Superior de Investigaciones Cient�ficas
-
-% umbral=-1 significa que se ajusta manualmente.
-% raizarchivos=[] significa que ya est� hecha la segmentaci�n, y buscar�
-% datosegm.
-%
-% mascara_intensmed debe ser una matriz l�gica del mismo tama�o que los
-% frames, con unos en la regi�n de la que se quiere sacar la intensidad
-% media. Si se deja vac�a, al final se coger� la roi.
-
-
-function datosegm=idTracker(directorio,directorio_destino,n_peces,umbral,reutiliza,roi,cambiacontraste,referencias,mascara_intensmed)
-
-encriptar=false;
-existedatosegm=false;
+function datosegm=idTrackerEntry(datosegm)
 
 try
-    if nargin==0
-        directorio=ultimodir;
-        [nombrearchivo,directorio]=uigetfile('*.*','Select video file',directorio);
-        ultimodir(directorio);
-        if isequal(nombrearchivo,0)
-            error('idTracker:WindowClosed','No file selected')
-        end
-        if nombrearchivo(end-3)=='.'
-            extension=nombrearchivo(end-2:end);
-            nombrearchivo=nombrearchivo(1:end-4);
-        else
-            extension='';
-        end       
-    else
-        [directorio, nombrearchivo, extension] = fileparts(directorio);
-        if extension(1) == '.'
-            extension = extension(2:end);
-        end
+    referencias=[];
+
+    if isempty(dir(datosegm.directorio))
+        mkdir(datosegm.directorio);
     end
     
-    if nombrearchivo(end)=='1'
-        raizarchivos=nombrearchivo(1:end-1);
-    else
-        raizarchivos=nombrearchivo;
-    end
-
-    if directorio(end)~=filesep
-        directorio(end+1)=filesep;
-    end
-
-    if nargin<2 || isempty(directorio_destino)
-        directorio_destino=[directorio 'segm' filesep];
-    end
-    if isempty(dir(directorio_destino))
-        mkdir(directorio_destino)
-    end
-    if directorio_destino(end)~=filesep
-        directorio_destino(end+1)=filesep;
-    end
-
-    datosegm=directorio2datosegm(directorio,raizarchivos,directorio_destino,extension);
-    existedatosegm=true;
-    datosegm.raizarchivo='segm';
-
-    if nargin<3 || isempty(n_peces)
-        n_peces=3;
-    end
-
-    if nargin<4 || isempty(umbral)
-        umbral=.85;
-    end
-    if nargin<5 || isempty(reutiliza)
-        reutiliza=false;
-    end
-    if nargin<6
-        roi=[];
-    end
-    if nargin<7 || isempty(cambiacontraste)
-        cambiacontraste=false;
-    end
-    if nargin<8
-        referencias=[];
-    end
-    if nargin<9
-        mascara_intensmed=[];
-    end
-
-    if length(reutiliza)==1
-        datosegm.reutiliza.datosegm=reutiliza;
-        datosegm.reutiliza.Background=reutiliza;
-        datosegm.reutiliza.Segmentation=reutiliza;
-        datosegm.reutiliza.Trozos=reutiliza;
-        datosegm.reutiliza.Individualization=reutiliza;
-        datosegm.reutiliza.Resegmentation=reutiliza;
-        datosegm.reutiliza.References=reutiliza;
-        datosegm.reutiliza.Identification=reutiliza;
-        datosegm.reutiliza.Trajectories=reutiliza;
-        datosegm.reutiliza.FillGaps=reutiliza;
-    end
-
-    datosegm.n_peces=n_peces;
-    datosegm.umbral=umbral;
-    datosegm.roi=roi;
-    datosegm.cambiacontraste=cambiacontraste;
-
-    % primerframe_intervalosbuenos=5000; % No se consideran los primeros 5000 frames para las referencias, porque la pared podr�a afectar. Esto es para v�deos de agresi�n.
-    datosegm.primerframe_intervalosbuenos=1;
-    datosegm.interval=[1 size(datosegm.frame2archivo,1)];
-    % primerframe_intervalosbuenos=24*500; % Para el v�deo con mano y techo de Juli�n
-    % primerframe_intervalosbuenos=20*500; % Para mi v�deo con mano y techo
-    datosegm.nframes_refs=3000;
-    datosegm.ratio_bwdist=2;
-    % disp('Guarning reduceresol!')
-    datosegm.reduceresol=1; % Para moscas
-    % reduceresol=3; % Para ratones
-    % reduceresol=2; % Para ratones, c�mara m�s lejos
-
-    datosegm.n_procesadores=Inf;
-
-    datosegm.umbral_npixels=250;
-    datosegm.limpiamierda=true;
-    datosegm.refsantiguas=false;
-
-    % Cosas que todav�a falta integrar en el panel:
-    datosegm.mascara_intensmed=mascara_intensmed;
-
-    
-    datosegm.version='20140805T102158';
-    datosegm.version_numero='2.1';
-    versioninfo.version=datosegm.version;
-    versioninfo.version_numero=datosegm.version_numero;    
-    save versioninfo versioninfo
     datosegm.MatlabVersion=version;
-    [~, datosegm.ordenata]=system('hostname');   
-    datosegm.guarda_menorescell=false;
-    datosegm.max_framesportrozo=1000;
-    datosegm.max_manchas.relativo=2;
-    datosegm.max_manchas.absoluto=10;
-    
-    if encriptar || ~isfield(datosegm,'encriptar')
-        datosegm.encriptar=encriptar;
-    end
-
+    [~, datosegm.ordenata]=system('hostname');
+        
     datosegm=datosegm2progreso(datosegm);
 
     h_panel=[];
@@ -284,7 +47,7 @@ try
     datosegm.umbral_npixelsmax=10000*datosegm.reduceresol^2;
     tic
     variable=datosegm;
-    save([datosegm.directorio 'datosegm.mat'], 'variable')
+    save([datosegm.directorio 'datosegm.mat'],'variable')
     datosegm.tiempos.tiempoguardando=datosegm.tiempos.tiempoguardando+toc;
 
     if ~isfield(datosegm,'saltatodo') || ~datosegm.saltatodo
@@ -550,7 +313,7 @@ try
                 end
             end
 
-            % Resegmentaci�n
+            % Resegmentaci�n               
             if datosegm.n_peces>1 && (~isfield(datosegm,'resegmentar') || datosegm.resegmentar)
                 n_archivos=size(datosegm.archivo2frame,1);
                 load([datosegm.directorio datosegm.raizarchivo '_' num2str(n_archivos)])
@@ -648,12 +411,12 @@ try
                 clear refs
             end
 
-            % Trozos, probabilidades y trayectorias
             if isfield(datosegm,'stopafterresegmentation') && datosegm.stopafterresegmentation
                 datosegm.solohastareferencias=true;
             end 
 
             if ~isfield(datosegm,'solohastareferencias') || ~datosegm.solohastareferencias
+
                 % Limpio la memoria con la esperanza de que ayude algo
                 a=who;
                 for c=1:length(a)
@@ -705,12 +468,18 @@ try
 
                 if datosegm.n_peces>1 || (isfield(datosegm,'siemprerefs') && datosegm.siemprerefs)
                     clear referencias
-                    set(h_panel.waitTrajectories,'XData',[0 0 .1 .1])
-                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.1)*100)) ' %'])
+                    if ~isempty(h_panel)
+                        set(h_panel.waitTrajectories,'XData',[0 0 .1 .1])
+                        set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.1)*100)) ' %'])
+                    end
+
                     load([datosegm.directorio 'solapamiento']);     
                     solapamiento=variable;
-                    set(h_panel.waitTrajectories,'XData',[0 0 .25 .25])
-                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.25)*100)) ' %'])
+                    
+                    if ~isempty(h_panel)
+                        set(h_panel.waitTrajectories,'XData',[0 0 .25 .25])
+                        set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.25)*100)) ' %'])
+                    end
                     idtrozos=mancha2id2idtrozos(datosegm,trozos,solapos,mancha2id);
                     probtrozos=idtrozos2probtrozos(idtrozos);
                     idprobtrozos.idtrozos=idtrozos;
@@ -719,14 +488,17 @@ try
                     save([datosegm.directorio 'idtrozos.mat'],'variable')
                     clear idprobtrozos
 
-                    set(h_panel.waitTrajectories,'XData',[0 0 .5 .5])
-                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.5)*100)) ' %'])
+                    if ~isempty(h_panel)
+                        set(h_panel.waitTrajectories,'XData',[0 0 .5 .5])
+                        set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.5)*100)) ' %'])
+                    end
 
                     load([datosegm.directorio 'conectanconviven.mat'])
                     [mancha2pez,trozo2pez,probtrozos_relac]=probtrozos2identidades(trozos,probtrozos,conviven);
                     man2pez.mancha2pez=mancha2pez;
                     man2pez.trozo2pez=trozo2pez;
                     man2pez.probtrozos_relac=probtrozos_relac;
+
                 else
                     mancha2pez=mancha2id;
                     mancha2pez(mancha2pez==0)=NaN;
@@ -737,11 +509,12 @@ try
                 save([datosegm.directorio 'mancha2pez.mat'],'variable')
                 clear man2pez
 
-                set(h_panel.waitTrajectories,'XData',[0 0 .75 .75])
-                set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.75)*100)) ' %'])
-
-                set(h_panel.waitTrajectories,'XData',[0 0 1 1])
-                set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(1)*100)) ' %'])
+                if ~isempty(h_panel)
+                    set(h_panel.waitTrajectories,'XData',[0 0 .75 .75])
+                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.75)*100)) ' %'])
+                    set(h_panel.waitTrajectories,'XData',[0 0 1 1])
+                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(1)*100)) ' %'])
+                end
 
                 load([datosegm.directorio 'mancha2pez.mat'])
                 man2pez=variable;
@@ -765,21 +538,18 @@ try
                     trajectories2txt(trajectories,probtrajectories,[datosegm.directorio_videos 'trajectories_nogaps.txt'])
                 end
 
-
-
-
                 progreso=1;
-                set(h_panel.waitFillGaps,'XData',[0 0 progreso progreso])
-                set(h_panel.textowaitFillGaps,'String',[num2str(round(progreso*100)) ' %'])
+
+                if ~isempty(h_panel)
+                    set(h_panel.waitFillGaps,'XData',[0 0 progreso progreso])
+                    set(h_panel.textowaitFillGaps,'String',[num2str(round(progreso*100)) ' %'])
+                end
 
                 datosegm.tiempos.fillgaps(2)=now;
-
 
                 datosegm.tiempos.total(2)=now;
                 variable=datosegm;
                 save([datosegm.directorio 'datosegm.mat'],'variable')
-%                     fprintf(datosegm.id_log,'%s - Fin.\n',datestr(now,30));
-                %         msgbox(sprintf('Tracking finished! :-)\n\nThe results are in the files named ''trajectories''\nin folder %s',datosegm.directorio),'Job done')
                 if str2double(datosegm.MatlabVersion(1))>=9
                     try
                         if MyPool.NumWorkers>0
