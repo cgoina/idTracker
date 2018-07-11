@@ -48,6 +48,8 @@ try
 
     if nargin<3 || isempty(n_peces)
         n_peces=3;
+    elseif ischar(n_peces)
+        n_peces=str2double(n_peces);
     end
     if nargin<4 || isempty(umbral)
         umbral=.85;
