@@ -208,28 +208,18 @@ try
     datosegm.umbral=umbral;
     datosegm.roi=roi;
     datosegm.cambiacontraste=cambiacontraste;
-
-    % primerframe_intervalosbuenos=5000; % No se consideran los primeros 5000 frames para las referencias, porque la pared podr�a afectar. Esto es para v�deos de agresi�n.
     datosegm.primerframe_intervalosbuenos=1;
     datosegm.interval=[1 size(datosegm.frame2archivo,1)];
-    % primerframe_intervalosbuenos=24*500; % Para el v�deo con mano y techo de Juli�n
-    % primerframe_intervalosbuenos=20*500; % Para mi v�deo con mano y techo
     datosegm.nframes_refs=3000;
     datosegm.ratio_bwdist=2;
-    % disp('Guarning reduceresol!')
     datosegm.reduceresol=1; % Para moscas
-    % reduceresol=3; % Para ratones
-    % reduceresol=2; % Para ratones, c�mara m�s lejos
-
     datosegm.n_procesadores=Inf;
-
     datosegm.umbral_npixels=250;
     datosegm.limpiamierda=true;
     datosegm.refsantiguas=false;
 
     % Cosas que todav�a falta integrar en el panel:
     datosegm.mascara_intensmed=mascara_intensmed;
-
     
     datosegm.version='20140805T102158';
     datosegm.version_numero='2.1';
@@ -252,10 +242,10 @@ try
     h_panel=[];
     datosegm.estilopixelsmierda=1;
 
-
     if ~isfield(datosegm,'trueno') || isempty(datosegm.trueno)
         datosegm.trueno=false;
     end
+    
     disp('Guarning!')
 
     if str2double(datosegm.MatlabVersion(1))>=9
@@ -749,8 +739,7 @@ try
                 npixelsyotros=variable;
                 [trajectories,probtrajectories]=mancha2pez2trayectorias(datosegm,man2pez.mancha2pez,trozos,[],npixelsyotros.mancha2centro);
                 save([datosegm.directorio 'trajectories.mat'],'trajectories','probtrajectories')
-                save([datosegm.directorio_videos 'trajectories.mat'],'trajectories','probtrajectories')
-                trajectories2txt(trajectories,probtrajectories,[datosegm.directorio_videos 'trajectories.txt'])
+                trajectories2txt(trajectories,probtrajectories,[datosegm.directorio 'trajectories.txt'])
 
                 datosegm.tiempos.fillgaps(1)=now;
                 if datosegm.n_peces>1
@@ -761,12 +750,8 @@ try
                     probtrajectories(man2pez.tiporefit==1)=-1;
                     probtrajectories(man2pez.tiporefit>=2)=-2;
                     save([datosegm.directorio 'trajectories_nogaps.mat'],'trajectories','probtrajectories')
-                    save([datosegm.directorio_videos 'trajectories_nogaps.mat'],'trajectories','probtrajectories')
-                    trajectories2txt(trajectories,probtrajectories,[datosegm.directorio_videos 'trajectories_nogaps.txt'])
+                    trajectories2txt(trajectories,probtrajectories,[datosegm.directorio 'trajectories_nogaps.txt'])
                 end
-
-
-
 
                 progreso=1;
                 set(h_panel.waitFillGaps,'XData',[0 0 progreso progreso])
@@ -774,12 +759,9 @@ try
 
                 datosegm.tiempos.fillgaps(2)=now;
 
-
                 datosegm.tiempos.total(2)=now;
                 variable=datosegm;
                 save([datosegm.directorio 'datosegm.mat'],'variable')
-%                     fprintf(datosegm.id_log,'%s - Fin.\n',datestr(now,30));
-                %         msgbox(sprintf('Tracking finished! :-)\n\nThe results are in the files named ''trajectories''\nin folder %s',datosegm.directorio),'Job done')
                 if str2double(datosegm.MatlabVersion(1))>=9
                     try
                         if MyPool.NumWorkers>0

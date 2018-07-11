@@ -1,4 +1,4 @@
-default: idTracker idTracker_batch idTrackerResults
+default: idTracker idTracker_nogui idTracker_batch idTrackerResults
 
 bin:
 	mkdir -p bin
@@ -10,6 +10,12 @@ idTracker: bin src/idTracker.m
 	-d bin \
 	-I src
 
+idTracker_nogui: bin src/idTracker_nogui.m
+	${MATLAB_ROOT}/bin/mcc \
+	-v \
+	-m idTracker_nogui \
+	-d bin \
+	-I src
 
 idTracker_batch: bin src/idTracker_batch.m
 	${MATLAB_ROOT}/bin/mcc \

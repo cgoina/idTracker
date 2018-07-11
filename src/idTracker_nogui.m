@@ -32,7 +32,7 @@ try
         directorio_destino(end+1)=filesep;
     end
 
-    datosegm=directorio2datosegm(directorio,raizarchivos,directorio_destino,extension);
+    datosegm=directorio2datosegm(directorio,raizarchivos,directorio_destino,extension,true);
     
     datosegm.empezarsinmas=true;
     datosegm.saltatodo=false;
@@ -572,12 +572,16 @@ try
 
                 if datosegm.n_peces>1 || (isfield(datosegm,'siemprerefs') && datosegm.siemprerefs)
                     clear referencias
-                    set(h_panel.waitTrajectories,'XData',[0 0 .1 .1])
-                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.1)*100)) ' %'])
+                    if ~isempty(h_panel)
+                        set(h_panel.waitTrajectories,'XData',[0 0 .1 .1])
+                        set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.1)*100)) ' %'])
+                    end
                     load([datosegm.directorio 'solapamiento']);     
                     solapamiento=variable;
-                    set(h_panel.waitTrajectories,'XData',[0 0 .25 .25])
-                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.25)*100)) ' %'])
+                    if ~isempty(h_panel)
+                        set(h_panel.waitTrajectories,'XData',[0 0 .25 .25])
+                        set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.25)*100)) ' %'])
+                    end
                     idtrozos=mancha2id2idtrozos(datosegm,trozos,solapos,mancha2id);
                     probtrozos=idtrozos2probtrozos(idtrozos);
                     idprobtrozos.idtrozos=idtrozos;
@@ -585,9 +589,10 @@ try
                     variable=idprobtrozos;
                     save([datosegm.directorio 'idtrozos.mat'],'variable')
                     clear idprobtrozos
-
-                    set(h_panel.waitTrajectories,'XData',[0 0 .5 .5])
-                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.5)*100)) ' %'])
+                    if ~isempty(h_panel)
+                        set(h_panel.waitTrajectories,'XData',[0 0 .5 .5])
+                        set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.5)*100)) ' %'])
+                    end
 
                     load([datosegm.directorio 'conectanconviven.mat'])
                     [mancha2pez,trozo2pez,probtrozos_relac]=probtrozos2identidades(trozos,probtrozos,conviven);
@@ -604,11 +609,12 @@ try
                 save([datosegm.directorio 'mancha2pez.mat'],'variable')
                 clear man2pez
 
-                set(h_panel.waitTrajectories,'XData',[0 0 .75 .75])
-                set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.75)*100)) ' %'])
-
-                set(h_panel.waitTrajectories,'XData',[0 0 1 1])
-                set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(1)*100)) ' %'])
+                if ~isempty(h_panel)
+                    set(h_panel.waitTrajectories,'XData',[0 0 .75 .75])
+                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(.75)*100)) ' %'])
+                    set(h_panel.waitTrajectories,'XData',[0 0 1 1])
+                    set(h_panel.textowaitTrajectories,'String',[num2str(round(sum(1)*100)) ' %'])
+                end
 
                 load([datosegm.directorio 'mancha2pez.mat'])
                 man2pez=variable;
@@ -616,8 +622,7 @@ try
                 npixelsyotros=variable;
                 [trajectories,probtrajectories]=mancha2pez2trayectorias(datosegm,man2pez.mancha2pez,trozos,[],npixelsyotros.mancha2centro);
                 save([datosegm.directorio 'trajectories.mat'],'trajectories','probtrajectories')
-                save([datosegm.directorio_videos 'trajectories.mat'],'trajectories','probtrajectories')
-                trajectories2txt(trajectories,probtrajectories,[datosegm.directorio_videos 'trajectories.txt'])
+                trajectories2txt(trajectories,probtrajectories,[datosegm.directorio 'trajectories.txt'])
 
                 datosegm.tiempos.fillgaps(1)=now;
                 if datosegm.n_peces>1
@@ -628,25 +633,21 @@ try
                     probtrajectories(man2pez.tiporefit==1)=-1;
                     probtrajectories(man2pez.tiporefit>=2)=-2;
                     save([datosegm.directorio 'trajectories_nogaps.mat'],'trajectories','probtrajectories')
-                    save([datosegm.directorio_videos 'trajectories_nogaps.mat'],'trajectories','probtrajectories')
-                    trajectories2txt(trajectories,probtrajectories,[datosegm.directorio_videos 'trajectories_nogaps.txt'])
+                    trajectories2txt(trajectories,probtrajectories,[datosegm.directorio 'trajectories_nogaps.txt'])
                 end
 
-
-
-
                 progreso=1;
-                set(h_panel.waitFillGaps,'XData',[0 0 progreso progreso])
-                set(h_panel.textowaitFillGaps,'String',[num2str(round(progreso*100)) ' %'])
+
+                if ~isempty(h_panel)
+                    set(h_panel.waitFillGaps,'XData',[0 0 progreso progreso])
+                    set(h_panel.textowaitFillGaps,'String',[num2str(round(progreso*100)) ' %'])
+                end
 
                 datosegm.tiempos.fillgaps(2)=now;
-
 
                 datosegm.tiempos.total(2)=now;
                 variable=datosegm;
                 save([datosegm.directorio 'datosegm.mat'],'variable')
-%                     fprintf(datosegm.id_log,'%s - Fin.\n',datestr(now,30));
-                %         msgbox(sprintf('Tracking finished! :-)\n\nThe results are in the files named ''trajectories''\nin folder %s',datosegm.directorio),'Job done')
                 if str2double(datosegm.MatlabVersion(1))>=9
                     try
                         if MyPool.NumWorkers>0

@@ -1,7 +1,7 @@
 % 25-Feb-2014 16:55:04 Evito que vuelva por trozos que ya se han resegmentado
 % APE 14 feb 14
 
-% (C) 2014 Alfonso Pérez Escudero, Gonzalo G. de Polavieja, Consejo Superior de Investigaciones Científicas
+% (C) 2014 Alfonso Pï¿½rez Escudero, Gonzalo G. de Polavieja, Consejo Superior de Investigaciones Cientï¿½ficas
 
 function [datosegm,npixelsyotros,solapamiento,trozos,solapos,conectan,conviven,solapan,indiv]=datosegm2resegmentacion(datosegm,handles)
 
@@ -30,7 +30,7 @@ trozo2indiv=indiv2trozosindiv(indiv,trozos);
 max_bwdist_act=npixelsyotros.max_bwdist;
 max_bwdist_act(~indiv)=NaN;
 max_bwdist_act(max_bwdist_act==0)=NaN;
-max_bwdist_act=min(max_bwdist_act,[],2); % Así coge el más pequeño de cada frame
+max_bwdist_act=min(max_bwdist_act,[],2); % Asï¿½ coge el mï¿½s pequeï¿½o de cada frame
 max_bwdist_act=max_bwdist_act(~isnan(max_bwdist_act));
 umbral_bwdist=median(max_bwdist_act)/datosegm.ratio_bwdist;
 datosegm.umbral_bwdist_resegmentacion=umbral_bwdist;
@@ -59,7 +59,7 @@ for c_trozos=trozosquedan
         for sentido=[-1 1]
             solapan_act=find(solapan(c_trozos,:));
             solapan_act=solapan_act(sentido*solapan_act<sentido*c_trozos);
-            % Comprueba que los que solapan no solapan con nadie más
+            % Comprueba que los que solapan no solapan con nadie mï¿½s
             bien=true;
             for c_solapan=1:length(solapan_act)
                 solapan2=find(solapan(solapan(c_solapan),:));
@@ -67,12 +67,12 @@ for c_trozos=trozosquedan
                     bien=false;
                 end
             end % c_solapan
-            % Si todo está bien, intenta la resegmentación
+            % Si todo estï¿½ bien, intenta la resegmentaciï¿½n
             if any(solapan_act) && bien && all(trozo2indiv(solapan_act))
                 frames=find(any(trozos==c_trozos,2));
                 frame_act=abs(min(sentido*frames));
                 resegmentado=true;
-                while ~isempty(frame_act) && frame_act>1 && frame_act<n_frames && resegmentado && any(trozos(frame_act,:)==c_trozos) % frame_act está vacío cuando se ha resegmentado el cruce entero en sentido contrario
+                while ~isempty(frame_act) && frame_act>1 && frame_act<n_frames && resegmentado && any(trozos(frame_act,:)==c_trozos) % frame_act estï¿½ vacï¿½o cuando se ha resegmentado el cruce entero en sentido contrario
                     fprintf('%g,',frame_act)
                     resegmentado=false;
                     archivo_act=datosegm.frame2archivo(frame_act,1);
@@ -224,13 +224,6 @@ for c_trozos=trozosquedan
                 end % c_frames
                 variable=segm{c_guardar};
                 save([datosegm.directorio 'segm_' num2str(c_guardar) '.mat'],'variable')
-%                 % Si hace falta, guarda el primer frame del siguiente segm, por se
-%                 % acaso se cancela y luego los solapamientos no coinciden
-%                 if c_guardar<length(terminados) && ~terminados(c_guardar+1) && llenos(c_guardar+1)
-%                     segmsiguiente=cell(size(segm));
-%                     segmsiguiente{c_guardar+1}=segm{c_guardar+1}(1);
-%                     save([datosegm.directorio 'segm_siguiente.mat'],segmsiguiente)
-%                 end
             end
             if terminados(c_guardar)
                 segm{c_guardar}=[];
@@ -252,11 +245,6 @@ for c_trozos=trozosquedan
         drawnow
     end
 end % c_trozos
-
-% if any(cellfun(@(x) ~isempty(x),segm))
-%     disp('Esto no debería haber pasado')
-%     keyboard
-% end
 
 % Recalcula trozos y conectanconviven
 [trozos,solapos]=solapamiento2trozos(solapamiento,npixelsyotros.npixels,datosegm,npixelsyotros.mancha2centro);

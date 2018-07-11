@@ -20,11 +20,15 @@
 
 % (C) 2014 Alfonso Pérez Escudero, Gonzalo G. de Polavieja, Consejo Superior de Investigaciones Científicas
 
-function datosegm=directorio2datosegm(directorio,raizarchivo,directoriodestino,extension)
+function datosegm=directorio2datosegm(directorio,raizarchivo,directoriodestino,extension,no_gui)
 
-h=waitbar(0,'Reading video files','Name','Loading video');
-hw=findobj(h,'Type','Patch');
-set(hw,'EdgeColor',[.5 .5 .7],'FaceColor',[.5 .5 .7]) % changes the color of the waitbar
+if nargin < 5 || ~no_gui
+    h=waitbar(0,'Reading video files','Name','Loading video');
+    hw=findobj(h,'Type','Patch');
+    set(hw,'EdgeColor',[.5 .5 .7],'FaceColor',[.5 .5 .7]) % changes the color of the waitbar
+else
+    h=[];
+end
 
 if nargin<3 || isempty(directoriodestino)
     directoriodestino=directorio; % Lo mete en el mismo directorio que el vídeo
@@ -53,13 +57,9 @@ datosegm.directorio_videos=directorio;
 datosegm.raizarchivo_videos=raizarchivo;
 datosegm.extension=esta(1).name(end-2:end);
 datosegm.MatlabVersion=version;
-% datosegm.frame2archivo=NaN(n_frames,2);
-% datosegm.archivo2frame=NaN(1,n_framesporarchivo); % Esta irá creciendo
 nframesporsegm=500; % Número de frames que puede haber en cada segm. Se permitirá hasta el doble.
 if ishandle(h)
     waitbar(1/(n_archivos+1),h,'Reading video files');
-else
-    error('idTracker:WindowClosed','Loading of video cancelled by user')
 end
 datosegm.obj=cell(1,n_archivos);
 while ~isempty(esta)
@@ -85,8 +85,7 @@ while ~isempty(esta)
         end
     end
         nframes_act=get(datosegm.obj{c_archivos},'NumberOfFrames');        
-    % Datos sobre el vídeo (no dependen de si segm está troceado por
-    % dentro)
+    % Datos sobre el vídeo (no dependen de si segm está troceado por dentro)
     datosegm.framerate(c_archivos)=get(datosegm.obj{c_archivos},'FrameRate');
     datosegm.frame2archivovideo(c_frames+1:c_frames+nframes_act,1)=c_archivos;
     datosegm.frame2archivovideo(c_frames+1:c_frames+nframes_act,2)=1:nframes_act;
@@ -112,8 +111,6 @@ while ~isempty(esta)
     esta=dir([directorio raizarchivo num2str(c_archivos) '.' datosegm.extension]);
     if ishandle(h)
         waitbar(c_archivos/(n_archivos+1),h);
-    else
-        error('idTracker:WindowClosed','Loading of video cancelled by user')
     end
 end 
 c_archivos=c_archivos-1;
@@ -127,14 +124,8 @@ datosegm.frame2archivo=datosegm.frame2archivo(1:end-1,:);
 
 if ishandle(h)
     waitbar(1,h);
-else
-    error('idTracker:WindowClosed','Loading of video cancelled by user')
 end
-% if strcmpi(datosegm.extension,'avi')
-    datosegm.tam=[get(datosegm.obj{end},'Height'),get(datosegm.obj{end},'Width')];
-% else
-%     datosegm.tam=[obj.height obj.width];
-% end
-% save([directoriodestino 'datosegm.mat'],'datosegm')
-fprintf('\n')
-close(h)
+datosegm.tam=[get(datosegm.obj{end},'Height'),get(datosegm.obj{end},'Width')];
+if ishandle(h)
+    close(h)
+end

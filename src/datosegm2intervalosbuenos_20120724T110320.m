@@ -1,28 +1,28 @@
-% 01-Dec-2011 12:20:29 Doy la opción de que no coja los del borde
+% 01-Dec-2011 12:20:29 Doy la opciï¿½n de que no coja los del borde
 % 14-Nov-2011 10:12:57 Corrijo para que no coja el mapa del primer frame
-% del intervalo si la segmentación no es buena.
-% 09-Nov-2011 18:02:50 Añado la comprobación de que la segmentación sea
+% del intervalo si la segmentaciï¿½n no es buena.
+% 09-Nov-2011 18:02:50 Aï¿½ado la comprobaciï¿½n de que la segmentaciï¿½n sea
 % buena para aceptar el frame para referencias
-% 14-Oct-2011 10:33:32 Quito el input n_peces. Lo cogerá de datosegm
+% 14-Oct-2011 10:33:32 Quito el input n_peces. Lo cogerï¿½ de datosegm
 % 10-Oct-2011 18:56:27 Cambio 'segm' por datosegm.raizarchivo
 % 11-Aug-2011 15:09:33 Revierto el cambio anterior, porque hace que un
 % frame con mal solapamiento sea ignorado.
-% 09-Aug-2011 17:19:42 Corrijo para que no descarte el último frame del
-% intervalo. Para ello, hago que cuando un frame es válido lo sea también
+% 09-Aug-2011 17:19:42 Corrijo para que no descarte el ï¿½ltimo frame del
+% intervalo. Para ello, hago que cuando un frame es vï¿½lido lo sea tambiï¿½n
 % el siguiente
 % 04-Aug-2011 11:47:04 Limpieza general
 % 02-Aug-2011 16:59:55 Quito segm_sig. Revierto lo del solapamiento, que
 % tampoco era para tanto
-% 02-Aug-2011 15:23:15 Cambio el criterio de frames válidos de solapamiento
-% a distancia. Mola menos, pero corre más
+% 02-Aug-2011 15:23:15 Cambio el criterio de frames vï¿½lidos de solapamiento
+% a distancia. Mola menos, pero corre mï¿½s
 % APE 2 ago 11 Viene de segm2intervalosbuenos
 
-% (C) 2014 Alfonso Pérez Escudero, Gonzalo G. de Polavieja, Consejo Superior de Investigaciones Científicas
+% (C) 2014 Alfonso Pï¿½rez Escudero, Gonzalo G. de Polavieja, Consejo Superior de Investigaciones Cientï¿½ficas
 
 function intervalosbuenos=datosegm2intervalosbuenos(datosegm,primerframe,quitaborde)
 
 if nargin<2 || isempty(primerframe)
-    primerframe=3000; % Para saltar la parte en la que están separados
+    primerframe=3000; % Para saltar la parte en la que estï¿½n separados
 end
 
 if nargin<3 || isempty(quitaborde)
@@ -30,9 +30,9 @@ if nargin<3 || isempty(quitaborde)
 end
 
 n_peces=datosegm.n_peces;
-umbral_avance=3; % Está en pixels
+umbral_avance=3; % Estï¿½ en pixels
 umbral_dist=10; % En pixels
-umbral_solapa=.75; % Solapamiento máximo permitido para meter el nuevo frame en la referencia
+umbral_solapa=.75; % Solapamiento mï¿½ximo permitido para meter el nuevo frame en la referencia
 
 n_frames=size(datosegm.frame2archivo,1);
 intervalosbuenos.frames=false(1,n_frames);
@@ -52,13 +52,11 @@ for c_frames=primerframe:n_frames-1
 end % c_frames
 fprintf('\n')
 
-diferencias=diff([false intervalosbuenos.frames false]); % Añado los false para que aparezcan bordes de intervalo al principio y al final
+diferencias=diff([false intervalosbuenos.frames false]); % Aï¿½ado los false para que aparezcan bordes de intervalo al principio y al final
 intervalosbuenos.iniciofinal(:,1)=find(diferencias==1);
 intervalosbuenos.iniciofinal(:,2)=find(diferencias==-1)-1;
 
 n_intervalos=size(intervalosbuenos.iniciofinal,1)
-% intervalosbuenos.logsolap=zeros(n_intervalos,n_peces);
-% intervalosbuenos.distancia=zeros(n_intervalos,n_peces);
 intervalosbuenos.framespararefs=false(n_frames,n_peces);
 intervalosbuenos.n_validos=zeros(n_intervalos,n_peces);
 archivo_act=-1;
@@ -73,7 +71,6 @@ for c_intervalos=1:n_intervalos
     end
     frame_act=datosegm.frame2archivo(intervalosbuenos.iniciofinal(c_intervalos,1),2);
     labels_sig=1:n_peces;
-%     segm(frame_act).labels=1:n_peces;    
     pixels_ultimo=cell(1,length(segm(frame_act).pixels));
     for c_peces=1:n_peces
         pixels_ultimo{c_peces}=false(1,prod(datosegm.tam));
@@ -85,7 +82,6 @@ for c_intervalos=1:n_intervalos
         end
     end
     centros_ultimo=segm(frame_act).centros;
-%     archivo_act=-1;
     for c_frames=intervalosbuenos.iniciofinal(c_intervalos,1):intervalosbuenos.iniciofinal(c_intervalos,2)-1        
         if datosegm.frame2archivo(c_frames,1)~=archivo_act
             if archivo_act>0
@@ -106,13 +102,7 @@ for c_intervalos=1:n_intervalos
                 intervalosbuenos.framespararefs(c_frames,c_peces)=true;
                 pixels_ultimo{segm(frame_act).labels(c_peces)}=pixels_act;
                 intervalosbuenos.n_validos(c_intervalos,segm(frame_act).labels(c_peces))=intervalosbuenos.n_validos(c_intervalos,segm(frame_act).labels(c_peces))+1;
-            end % if válido
-%             dist_act=sqrt(sum((segm(frame_act).centros(c_peces,:)-centros_ultimo(segm(frame_act).labels(c_peces),:)).^2));
-%             if dist_act>umbral_dist
-%                 intervalosbuenos.framespararefs(frame_act,c_peces)=true;
-%                 centros_ultimo(segm(frame_act).labels(c_peces),:)=segm(frame_act).centros(c_peces,:);
-%                 intervalosbuenos.n_validos(c_intervalos,segm(frame_act).labels(c_peces))=intervalosbuenos.n_validos(c_intervalos,segm(frame_act).labels(c_peces))+1;
-%             end
+            end % if vï¿½lido
         end % c_bichos
     end % c_frames
 end % c_intervalos

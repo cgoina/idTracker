@@ -47,11 +47,11 @@ if nargin<1 || isempty(datosegm)
        directorio(end+1)=filesep;
    end   
 else
-    directorio=datosegm.directorio_videos;
+    directorio=datosegm.directorio;
 end
 
 datos.directorio=directorio;
-lista=dir([directorio 'segm*']);
+lista=dir([directorio]);
 
 c_platos=0;
 for c=1:length(lista)
@@ -185,15 +185,16 @@ else
     plato_act=1;
 end
 
-load([datos.directorio 'segm' datos.nombresplatos{plato_act} filesep 'datosegm.mat'])
+load([datos.directorio datos.nombresplatos{plato_act} filesep 'datosegm.mat'])
 if isstruct(variable)
     datosegm=variable;
     clear variable
 else
-    datosegm=load_encrypt([datos.directorio 'segm' datos.nombresplatos{plato_act} filesep 'datosegm.mat'],1);
+    datosegm=load_encrypt([datos.directorio datos.nombresplatos{plato_act} filesep 'datosegm.mat'],1);
 end
-datosegm.directorio=[datos.directorio 'segm' datos.nombresplatos{plato_act} filesep];
-datosegm.directorio_videos=datos.directorio;
+if ~isempty(datos.nombresplatos{plato_act})
+    datosegm.directorio=[datos.directorio datos.nombresplatos{plato_act} filesep];
+end
 if ~isfield(datosegm,'extension')
     datosegm.extension='avi';
 end
@@ -209,7 +210,6 @@ else
 end
 datos.videoabierto=0;    
 datos.corriendo=false;
-
 
 datos.datosegm=datosegm;
 datos.colorines=[.5 .5 .5 ; jet(datos.datosegm.n_peces)];

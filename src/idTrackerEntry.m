@@ -522,8 +522,7 @@ try
                 npixelsyotros=variable;
                 [trajectories,probtrajectories]=mancha2pez2trayectorias(datosegm,man2pez.mancha2pez,trozos,[],npixelsyotros.mancha2centro);
                 save([datosegm.directorio 'trajectories.mat'],'trajectories','probtrajectories')
-                save([datosegm.directorio_videos 'trajectories.mat'],'trajectories','probtrajectories')
-                trajectories2txt(trajectories,probtrajectories,[datosegm.directorio_videos 'trajectories.txt'])
+                trajectories2txt(trajectories,probtrajectories,[datosegm.directorio 'trajectories.txt'])
 
                 datosegm.tiempos.fillgaps(1)=now;
                 if datosegm.n_peces>1
@@ -534,8 +533,7 @@ try
                     probtrajectories(man2pez.tiporefit==1)=-1;
                     probtrajectories(man2pez.tiporefit>=2)=-2;
                     save([datosegm.directorio 'trajectories_nogaps.mat'],'trajectories','probtrajectories')
-                    save([datosegm.directorio_videos 'trajectories_nogaps.mat'],'trajectories','probtrajectories')
-                    trajectories2txt(trajectories,probtrajectories,[datosegm.directorio_videos 'trajectories_nogaps.txt'])
+                    trajectories2txt(trajectories,probtrajectories,[datosegm.directorio 'trajectories_nogaps.txt'])
                 end
 
                 progreso=1;
