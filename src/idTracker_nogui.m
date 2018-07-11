@@ -324,7 +324,12 @@ try
                         framesbuenos=find(datosegm.n_manchas==datosegm.n_peces);
                         c_refs=0;
                         for c_frames=1:nframes_refindiv
-                            frame=framesbuenos(ceil(rand*length(framesbuenos))); % Coge uno al azar
+                            randframe=ceil(rand*length(framesbuenos));
+                            if randframe==0
+                                disp('Warning: randframe is 0')
+                                randframe=1;
+                            end
+                            frame=framesbuenos(randframe); % Coge uno al azar
                             archivo_act=datosegm.frame2archivo(frame,1);
                             frame_arch=datosegm.frame2archivo(frame,2);
                             load([datosegm.directorio datosegm.raizarchivo '_' num2str(archivo_act)])
@@ -337,7 +342,7 @@ try
                             end % c_peces
                         end % c_frames
                         refs_indiv=refs_indiv(:,:,:,1:c_refs);
-                        mat_validos=datosegm.indvalidos;
+                        ranmat_validos=datosegm.indvalidos;
                         indvalidos{1}=find(mat_validos(:,:,1));
                         mat_validos(:,:,1)=false;
                         indvalidos{2}=find(mat_validos);
