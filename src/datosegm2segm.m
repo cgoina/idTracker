@@ -69,7 +69,7 @@ if ~isfield(datosegm,'dist_max_mapas')
     datosegm.dist_max_mapas=[];
 end
 
-if nargin<2
+if nargin<2 || isempty(handles)
     handles=[];
 else
     for c_campos=1:length(camposhandles)
@@ -324,7 +324,7 @@ else
     datosegm.indvalidos=false(size(indvalidos));
     for c_mapas=1:2
         capa=indvalidos(:,:,c_mapas);
-        [s,orden]=sort(capa(:),'descend');
+        [~,orden]=sort(capa(:),'descend');
         ind=orden(1:datosegm.npixels_indvalidos);
         ind=ind(capa(ind)>0);
         lienzo=false(size(capa));
