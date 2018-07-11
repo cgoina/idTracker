@@ -150,7 +150,6 @@ end % c_pasos
 % Cambio a mano "trozos" por "fragments" y "FillGaps" por "Estimate during crossings"
 set(h.Trozos,'String','Fragments')
 set(h.FillGaps,'String','Est. during crossings')
-% datos.obj=cell(1,size(datosegm.archivo2frame,1));
 % Comprueba si hay que crear el objeto vídeo de nuevo
 crearobj=true;
 if isfield(datosegm,'obj') && ~isempty(datosegm.obj) && ~isempty(datosegm.obj{1})
@@ -178,29 +177,17 @@ if size(frame,3)==3
 end
 datos.frame=frame;
 datos.ind_frame=1;
-% [datos.segm,datos.frame]=avi2segm(frame,datosegm,0,[]);
-% datos.cambios.frame=true;
-% datos.cambios.segmentacion=true;
 h.ejes=axes('Position',[margen_horiz+ancho_textos+sep_horiz+ancho_edits+sep_horiz2 1-margen_vert-alto_ejes ancho_ejes alto_ejes]);
 h.frame=imagesc(zeros(datosegm.tam));
 hold(h.ejes,'on')
-% h.ocupado se usará para que las funciones se den la vez. Cada elemento
-% corresponde a una función, con el orden
-% [actualiza redibuja clicreutiliza calculavideomedio cogezona borramascara importaparametros empiezatracking]
-% Cada función sólo puede empezar cuando h.ocupado es cero para todas las
-% demás funciones
-% h.ocupado=plot(ones(1,8),NaN(1,8),'Visible','off');
-% h.text_frame=uicontrol('Style','text','Units','normalized','Position',[margen_horiz+ancho_textos+sep_horiz+ancho_edits+sep_horiz2+ancho_nmanchas 1-margen_vert-alto_ejes-sep_vert3-alto_textos ancho_edits alto_textos],'FontSize',tam_letras,'String','Current frame','BackgroundColor',color_fondo,'ForeGroundcolor',[0 0 0]);
 h.text_frame=uicontrol('Style','text','Units','normalized','Position',[margen_horiz+ancho_textos+sep_horiz+ancho_edits+sep_horiz2 1-margen_vert-alto_ejes-sep_vert3-alto_textos ancho_nmanchas alto_textos],'String','Current frame','BackgroundColor',color_fondo,'FontSize',tam_letras,'Enable','off','UserData',datosobj_on);
 h.edit_frame=uicontrol('Style','edit','Units','normalized','Position',[margen_horiz+ancho_textos+sep_horiz+ancho_edits+sep_horiz2 1-margen_vert-alto_ejes-sep_vert3-2*alto_textos ancho_edits alto_textos],'String','1','BackgroundColor','w','FontSize',tam_letras,'HorizontalAlignment','right','Enable','off','UserData',datosobj_on);        
-% n_manchas=length(datos.segm.pixels);
 lienzo=repmat(color_manchas(:),[1 size(frame,1) size(frame,2)]);
 lienzo=permute(lienzo,[2 3 1]);
 h.lienzo_manchas=image(lienzo,'AlphaData',0);
 lienzo=repmat(color_mascara(:),[1 size(frame,1) size(frame,2)]);
 lienzo=permute(lienzo,[2 3 1]);
 h.lienzo_mascara=image(lienzo,'AlphaData',0);
-% datos.cambios.mascara=true;
 axis image
 colormap gray
 
@@ -217,8 +204,6 @@ if str2double(datosegm.MatlabVersion(1))>=9
         patch([0.9 1 1 0.9],cbarY+iColor*cbarSeg,cDataList(iColor+1),'edgecolor','none')
     end
     h.lineaumbral=line([0.9 1],[1 1]*datosegm.umbral,'Color',color_manchas,'LineWidth',2);
-    % h_line_cbar = line([cbarLeft,cbarRight],[0,0],'color','k','linewidth',4);
-    % h.lineaumbral=plot(h.colorbar_axes,[h.colorbar.Position(1) h.colorbar.Position(3)],[1 1]*datosegm.umbral,'Color',color_manchas,'LineWidth',2);
 else   
     h.colorbar=colorbar('Position',[margen_horiz+ancho_textos+sep_horiz+ancho_edits+sep_horiz2+ancho_ejes+sep_colorbar 1-margen_vert-alto_ejes ancho_colorbar alto_ejes]);
     ejes_colorbar=axis(h.colorbar);
@@ -229,7 +214,6 @@ end
 h.text_nmanchas=uicontrol('Style','text','Units','normalized','Position',[margen_horiz+ancho_textos+sep_horiz+ancho_edits+sep_horiz2+ancho_edits 1-margen_vert-alto_ejes-sep_vert3-2*alto_textos ancho_nmanchas 2*alto_textos],'String',sprintf('0 animals\ndetected'),'BackgroundColor',color_fondo,'FontSize',tam_letras,'Enable','off','UserData',datosobj_on);
 h.ejes_tams=axes('Position',[margen_horiz+ancho_textos+sep_horiz+ancho_edits+sep_horiz2+ancho_edits+ancho_nmanchas+.01 1-margen_vert-alto_ejes-sep_vert3-alto_ejestams ancho_ejes-ancho_nmanchas-ancho_edits-.01 alto_ejestams],'TickDir','in');%,'FontSize',tam_letras);
 xlabel('Sizes of detected animals (pixels)')
-
 
 if menuadvanced
     h.menu_import=uimenu('Label','Import tracking parameters','Enable','off','UserData',datosobj_on);
@@ -244,7 +228,6 @@ else
     h.submenu_solohastareferencias=-1;
 end
 h.menu_about=uimenu('Label','About idTracker','Enable','off','UserData',datosobj_on);
-% h.timerboton=timer;
 
 %% Callbacks
 set(h.boton,'Callback',@(uno,dos) empiezatracking(uno,dos,h))
@@ -278,7 +261,6 @@ set(h.fig,'CloseRequestFcn',@(uno,dos) cerrar(uno,dos,h))
 datos.datosegm=datosegm;
 datos.campos=campos;
 
-
 % Comprueba si hay una nueva versión
 datos.texto_version='';
 try    
@@ -298,17 +280,10 @@ end
     
 
 guidata(h.fig,datos);
-% ocupado=zeros(1,8);
-% ocupado(3)=1; % Da paso a clicreutiliza
-% set(h.ocupado,'XData',ocupado); drawnow
 clicreutiliza([],[],h) %Antonio: problem here!!!
 reactiva(1,h)
-% disp('dos')
-% actualiza(NaN,[],h)
-% disp('tres')
-% redibuja([],[],h)
 if ~isfield(datosegm,'empezarsinmas') || datosegm.empezarsinmas==0
-        uiwait(h.fig)    
+    uiwait(h.fig)    
 else
     datos=guidata(h.fig);
     datos.datosegm.saltatodo=false;
