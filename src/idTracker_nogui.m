@@ -344,7 +344,7 @@ try
                             end % c_peces
                         end % c_frames
                         refs_indiv=refs_indiv(:,:,:,1:c_refs);
-                        ranmat_validos=datosegm.indvalidos;
+                        mat_validos=datosegm.indvalidos;
                         indvalidos{1}=find(mat_validos(:,:,1));
                         mat_validos(:,:,1)=false;
                         indvalidos{2}=find(mat_validos);
