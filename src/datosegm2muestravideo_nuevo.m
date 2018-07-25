@@ -38,7 +38,7 @@ if nargin<1 || isempty(datosegm)
     if ~isempty(directorio) && directorio(end)==filesep
         directorio=directorio(1:end-1); % Necesario para que funcione bien el uigetfile cuando el nombre del directorio tiene un espacio al final
     end
-   [nombrearchivo,directorio]=uigetfile('*.*','Select video file',directorio); 
+   [~,directorio]=uigetfile('*.*','Select video file',directorio); 
    if isempty(dir(directorio))
        directorio=[directorio(1:end-1) ' ' directorio(end)]; % Esto hace falta en los vídeos de Pierre, porque se come el último espacio
    end
@@ -50,11 +50,13 @@ else
     directorio=datosegm.directorio;
 end
 
+disp(directorio);
 datos.directorio=directorio;
 lista=dir([directorio]);
 
 c_platos=0;
 for c=1:length(lista)
+    disp(lista(c).name);
     if lista(c).isdir && ~isempty(dir([directorio lista(c).name filesep 'mancha2pez*.mat']))
         c_platos=c_platos+1;
         datos.nombresplatos{c_platos}=lista(c).name(5:end);
